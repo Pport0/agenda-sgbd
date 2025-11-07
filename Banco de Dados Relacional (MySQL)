@@ -1,0 +1,31 @@
+CREATE DATABASE agenda_db;
+USE agenda_db;
+
+CREATE TABLE usuario (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE compromisso (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  titulo VARCHAR(100) NOT NULL,
+  descricao TEXT,
+  data_compromisso DATE NOT NULL,
+  hora_compromisso TIME NOT NULL,
+  status VARCHAR(20) DEFAULT 'Pendente',
+  FOREIGN KEY (usuario_id) REFERENCES usuario(id)
+);
+
+-- Inserindo usuários
+INSERT INTO usuario (nome, email) VALUES ('Paula Porto', 'paula@email.com');
+
+-- Inserindo compromissos
+INSERT INTO compromisso (usuario_id, titulo, descricao, data_compromisso, hora_compromisso)
+VALUES (1, 'Reunião de Projeto', 'Discutir novas funcionalidades', '2025-11-10', '14:00:00');
+
+-- Consulta de compromissos de um usuário
+SELECT u.nome, c.titulo, c.data_compromisso, c.hora_compromisso
+FROM usuario u
+JOIN compromisso c ON u.id = c.usuario_id;
