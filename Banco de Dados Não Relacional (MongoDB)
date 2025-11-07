@@ -1,0 +1,82 @@
+use agenda_db
+
+db.createCollection("usuarios", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["nome", "email", "telefone"],
+      properties: {
+        nome: { bsonType: "string", description: "Nome do usuário" },
+        email: { bsonType: "string", description: "E-mail do usuário" },
+        telefone: { bsonType: "string", description: "Telefone do usuário" }
+      }
+    }
+  }
+})
+
+
+db.createCollection("compromissos", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["data", "hora", "descricao", "id_usuario"],
+      properties: {
+        data: { bsonType: "string", description: "Data do compromisso" },
+        hora: { bsonType: "string", description: "Hora do compromisso" },
+        descricao: { bsonType: "string", description: "Descrição do compromisso" },
+        id_usuario: { bsonType: "objectId", description: "Referência ao usuário" }
+      }
+    }
+  }
+})
+
+db.usuarios.insertMany([
+  {
+    nome: "Paula Alves Porto",
+    email: "paula.porto@gmail.com",
+    telefone: "62988889999"
+  },
+  {
+    nome: "Rafael Lima",
+    email: "rafael.lima@gmail.com",
+    telefone: "62977776666"
+  }
+])
+
+
+
+// Captura o ID da Paula
+var idPaula = db.usuarios.findOne({ nome: "Paula Alves Porto" })._id
+
+db.compromissos.insertMany([
+  {
+    data: "2025-11-08",
+    hora: "09:00",
+    descricao: "Reunião de voluntários",
+    id_usuario: idPaula
+  },
+  {
+    data: "2025-11-09",
+    hora: "15:00",
+    descricao: "Entrega de relatório de banco de dados",
+    id_usuario: idPaula
+  }
+])
+
+// Todos os usuários
+db.usuarios.find().pretty()
+
+// Compromissos da Paula
+var idPaula = db.usuarios.findOne({ nome: "Paula Alves Porto" })._id
+db.compromissos.find({ id_usuario: idPaula }).pretty()
+
+
+// Atualizar e-mail da Paula
+db.usuarios.updateOne(
+  { nome: "Paula Alves Porto" },
+  { $set: { email: "paula.alvesporto@gmail.com" } }
+)
+
+// Deletar compromisso
+db.compromissos.deleteOne({ descricao: "Entrega de relatório de banco de dados" })
+
